@@ -31,7 +31,7 @@ func init() {
 	flag.StringVar(&t, "t", "5m", "query time interval")
 	flag.StringVar(&c, "c", "500,502,504", "abnormal response status code")
 	flag.Int64Var(&n, "n", 20, "threshold number of abnormal events")
-	flag.StringVar(&b, "b", "10s", "set abnormal response time, default 10s")
+	flag.StringVar(&b, "b", "10", "set abnormal response time, default 10 s")
 	flag.StringVar(&p, "p", "112321321,1231231", "set notify to phone")
 }
 
