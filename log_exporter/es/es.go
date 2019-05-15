@@ -54,7 +54,7 @@ func (e *ES) SearchScroll(index string, intervalT string, lastT *int64) {
 	}
 
 	// search total data
-	// fmt.Println("total", searchR.Hits.TotalHits)
+	fmt.Println("total", searchR.Hits.TotalHits)
 
 	var nlog NgxLog
 	for {
@@ -90,7 +90,8 @@ func (e *ES) SearchScroll(index string, intervalT string, lastT *int64) {
 }
 
 // SearchTerm specify query condition
-func (e *ES) SearchTerm(index string, qCondition string, intervalT string) {
+func (e *ES) SearchTerm(index string, qCondition string, intervalT string) (total int64) {
+
 	queryC := strings.Split(qCondition, ":")
 	termQuery := elastic.NewTermQuery(queryC[0], queryC[1])
 	dt, _ := time.ParseDuration("-" + intervalT)
@@ -105,6 +106,25 @@ func (e *ES) SearchTerm(index string, qCondition string, intervalT string) {
 		log.Println("scroll search error ", err)
 		return
 	}
+	return searchR.Hits.TotalHits
+}
 
-	fmt.Println(searchR.Hits.TotalHits)
+// SearchRange specify query condition range
+func (e *ES) SearchRange(index string, boundary string, intervalT string) (total int64) {
+
+	dt, _ := time.ParseDuration("-" + intervalT)
+	endT := time.Now()
+	startT := endT.Add(dt)
+	timeRangeQuery := elastic.NewRangeQuery("@timestamp").Gte(startT).Lte(endT)
+	conditionRangeQuery := elastic.NewRangeQuery("request_time").Gte(boundary)
+	termsQuery := elastic.NewTermsQuery("status", "101", "499")
+	query := elastic.NewBoolQuery().Must(conditionRangeQuery, timeRangeQuery).MustNot(termsQuery)
+
+	scrollC := elastic.NewScrollService(e.Client)
+	searchR, err := scrollC.Index(index).Query(query).KeepAlive("1m").Size(500).Do(context.Background())
+	if err != nil && err != io.EOF {
+		log.Println("scroll search error ", err)
+		return
+	}
+	return searchR.Hits.TotalHits
 }
