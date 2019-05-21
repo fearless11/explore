@@ -1,4 +1,3 @@
-golang template 
 #### 模板作用
 
 目的：避免重复的代码，实现一定程度的代码复用
@@ -12,4 +11,6 @@ golang template
 - text/[template](https://godoc.org/text/template)
 
 - html/template
+
+   [go template-简书](https://www.jianshu.com/p/29c9f5e06b1d)
 
