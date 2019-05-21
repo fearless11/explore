@@ -1,0 +1,9 @@
+
+{{/* 定义一个模板,命名为apple.message */}}
+{{define "apple.message"}} {{- .Name}} is {{.Status}} {{end}}
+
+{{/* 新模板sample,嵌套模板apple.message,通过.把当前参数传递到子模板中 */}}
+{{ define "sample"}}sample: {{template "apple.message" .}}{{end}}
+
+
+{{ define "glob" }}{{template "index" .}}{{end}}
